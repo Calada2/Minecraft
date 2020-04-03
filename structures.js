@@ -1,0 +1,20 @@
+const structures = {};
+structures.tree = [];
+structures.tree[0] = [];
+structures.tree[0][0] = [];
+structures.tree[0][0][0] = 8;
+structures.tree[0][0][1] = 8;
+structures.tree[0][0][2] = 8;
+structures.tree[0][0][3] = 8;
+structures.tree[0][0][4] = 9;
+structures.tree[0][1] = [-1,9,9,9];
+structures.tree[0][-1] = [-1,9,9,9];
+structures.tree[1] = [];
+structures.tree[1][0] = [0,9,9,9];
+structures.tree[-1] = [];
+structures.tree[-1][0] = [-1,9,9,9];
+
+structures.tree[1][1] = [-1,9,9];
+structures.tree[-1][1] = [-1,9,9];
+structures.tree[1][-1] = [-1,9,9];
+structures.tree[-1][-1] = [-1,9,9];

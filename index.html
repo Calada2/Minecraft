@@ -123,11 +123,13 @@
 </style>
 </body>
 <script src='blockList.js'></script>
+<script src='structures.js'></script>
 <script src='vector3d.js'></script>
 <script>
    // document.addEventListener('contextmenu', event => event.preventDefault());
 
 const mapRadius = 8;
+const heightLimit = 29;
 
 const blocks = [];
 let blockData = [];
@@ -141,7 +143,7 @@ let blockData = [];
             {
                 blocks[x][z] = [];
                 blockData[x][z] = [];
-                for(let y = 0; y <= 32; ++y)
+                for(let y = 0; y <= heightLimit + 3; ++y)
                 {
                     blocks[x][z][y] = constructCubeDom();
                     blocks[x][z][y].style.transform = `translateZ(${z*100}px) translateX(${x*100}px) translateY(${y*-100}px)`;
@@ -620,6 +622,76 @@ document.addEventListener('pointerlockchange', e=>{
        document.querySelector('#currentBlock').style.setProperty('--img', `url(textures/${blockList[id].pic})`);
    }
 
+   function tick()
+   {
+       for(let x in blockData)
+       {
+           for(let z in blockData[x])
+           {
+               for(let y in blockData[x][z])
+               {
+                   let block = blockData[x][z][y];
+                   switch (block) {
+                       case 1:
+                       {
+                           for(let x2 = -1; x2 <= 1; ++x2)
+                               for(let z2 = -1; z2 <= 1; ++z2)
+                                   for(let y2 = -1; y2 <= 1; ++y2)
+                                   {
+                                      // console.log(x - -x2 + '|' + z - -z2 + '|' + y - -y2);
+                                      /* console.log('X');
+                                       console.log(x - -x2);
+                                       console.log('Z');
+                                       console.log(z - -z2);
+                                       console.log('Y');
+                                       console.log(y - -y2);
+                                       console.log('---------------------');*/
+                                       if((Math.abs(x - -x2) <= mapRadius && Math.abs(z - -z2) <= mapRadius && y - -y2 > 0 && y - -y2 <= heightLimit) &&
+                                           blockData[x - -x2][z - -z2][y - -y2] == 2 && blockData[x][z][y - -1] == 0 && Math.random() < .005)
+                                       {
+                                           placeBlock(x,z,y,2);
+                                       }
+                                   }
+
+                           break;
+                       }
+                       case 10:
+                       {
+                           if(Math.random() < .15 && blockData[x][z][y-1] == 2 && blockData[x][z][y - -1] == 0 && blockData[x][z][y - -2] == 0 && blockData[x][z][y - -3] == 0)
+                           {
+                               placeBlock(x,z,y,0);
+                               buildStructure(x,z,y,'tree',false);
+                           }
+                       }
+
+                   }
+               }
+           }
+       }
+   }
+
+   function buildStructure(xp, zp, yp, structureName, replace)
+   {
+       let structure = structures[structureName];
+
+       for(let x in structure) {
+           for (let z in structure[x]) {
+               for (let y in structure[x][z]) {
+                    if((Math.abs(xp - -x) <= mapRadius && Math.abs(zp - -z <= mapRadius) && yp - -y > 0 && yp - y <= heightLimit) && (replace || blockData[xp - -x][zp - -z][yp - -y] == 0) && (structure[x][z][y] != undefined && structure[x][z][y] != -1))
+                    {
+                        placeBlock(xp - -x, zp - -z, yp - -y,structure[x][z][y]);
+                    }
+               }
+           }
+       }
+   }
+
+   buildStructure(-5,-5,10, 'tree', false);
+
+   //player position should be represented in blocks
+
     setInterval(gameloop, 1000/60);
+    setInterval(tick, 1000);
 </script>
+<!--<script src='../../tools/rotate.js'></script>-->
 </html>
