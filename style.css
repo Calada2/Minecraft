@@ -1,0 +1,113 @@
+*
+{
+    user-select: none;
+}
+body
+{
+    background: #a0d7ff;
+}
+#gui
+{
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    transform-style: preserve-3d;
+    z-index: 1000;
+    overflow: hidden;
+}
+#crosshair
+{
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    background-image: url(crosshair.png);
+    background-size: 100% 100%;
+    left: calc(50% - 5px);
+    top: calc(50% - 5px);
+    image-rendering: crisp-edges;
+    image-rendering: pixelated;
+}
+#camera
+{
+    --x: 0;
+    --y: 0;
+    --z: 0;
+    --rotX: 0;
+    --rotY: 0;
+    --perspective: 700px;
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    perspective: var(--perspective);
+    overflow: hidden;
+    z-index: 500;
+
+}
+#scene
+{
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    transform-style: preserve-3d;
+    transform: rotateX(var(--rotX)) rotateY(var(--rotY)) translateX(var(--x)) translateY(var(--y)) translateZ(var(--z)) translateZ(var(--perspective));
+    transform-origin: 50% 50% var(--perspective);
+}
+.block
+{
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 50%;
+    height: 50%;
+    transform-style: preserve-3d;
+
+}
+.face
+{
+    position: absolute;
+    width: 100px;
+    height: 100px;
+    left: calc(50% - 50px);
+    background-size: 100px 100px;
+    image-rendering: crisp-edges;
+    image-rendering: pixelated;
+}
+.block[focus='true'] .face
+{
+    width: 98px;
+    height: 98px;
+    background-position: -1px -1px;
+    border: 1px solid black;
+}
+.face2
+{
+    position: absolute;
+    width: 100px;
+    height: 100px;
+    left: calc(50% - 50px);
+    background-size: 100px 100px;
+    image-rendering: crisp-edges;
+    image-rendering: pixelated;
+}
+.previewFace
+{
+    background-image: var(--img);
+}
+#currentBlock
+{
+    position: absolute;
+    transform-style: preserve-3d;
+    top: 50px;
+    right: 50px;
+    width: 100px;
+    height: 100px;
+    --img: url(textures/dirt.png);
+    transform: scale(.6) rotateX(-30deg) rotateY(-45deg);
+
+}
