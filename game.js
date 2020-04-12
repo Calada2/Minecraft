@@ -37,29 +37,11 @@ function constructWorld()
 
 function constructCubeDom(id)
 {
-    /* let block = null;
-
-     if(id > 0)
-     {
-
-     }*/
-
     let block = document.createElement('div');
     block.className = 'block';
     block.type = id;
     block.faces = [];
 
-    console.log(id);
-    /*if(blockList[id].xshape)
-    {
-        let side = document.createElement('div');
-        side.className = 'face';
-        side.style.backgroundImage = `url(textures/${blockList[id].pic})`;
-        side.style.transform = 'rotateY(45deg)';
-        block.appendChild(side.cloneNode(true));
-        side.style.transform = 'rotateY(-45deg)';
-        block.appendChild(side.cloneNode(true));
-    }*/
 
     return block;
 
@@ -101,7 +83,6 @@ function renderGame()
 {
     for(let x in blockData)
     {
-        //console.log(x);
         for(let z in blockData[x])
         {
             for(let y in blockData[x][z])
@@ -111,10 +92,6 @@ function renderGame()
                 {
                     blockUpdate(x,z,y);
                 }
-
-
-                //  console.log(block.faces);
-
             }
         }
     }
@@ -178,44 +155,44 @@ function blockUpdate(x,z,y)
         {
 
             let blockTransparent = isTransparent(x,z,y);
+            let blockXShaped = isXShaped(x,z,y);
             let visibleFaces = 0;
-            if(isAir(x,z - -1,y) || (isTransparent(x,z - -1,y) && !blockTransparent))
+            if(isAir(x,z - -1,y) || isXShaped(x,z - -1,y) || (isTransparent(x,z - -1,y) && !blockTransparent))
             {
                 let elem = addFace(type, 0);
                 block.faces[0] = elem;
                 block.appendChild(elem);
                 ++visibleFaces;
             }
-            if(isAir(x,z - 1,y) || (isTransparent(x,z - 1,y) && !blockTransparent))
+            if(isAir(x,z - 1,y) || isXShaped(x,z - 1,y) || ( isTransparent(x,z - 1,y) && !blockTransparent))
             {
                 let elem = addFace(type, 2);
                 block.faces[2] = elem;
                 block.appendChild(elem);
                 ++visibleFaces;
             }
-            if(isAir(x - -1,z,y) || (isTransparent(x - -1,z,y) && !blockTransparent))
+            if(isAir(x - -1,z,y) || isXShaped(x - -1,z,y) || ( isTransparent(x - -1,z,y) && !blockTransparent))
             {
                 let elem = addFace(type, 1);
                 block.faces[1] = elem;
                 block.appendChild(elem);
                 ++visibleFaces;
             }
-            //console.log(block.faces);
-            if(isAir(x - 1,z,y) || (isTransparent(x - 1,z,y) && !blockTransparent))
+            if(isAir(x - 1,z,y) || isXShaped(x - 1,z,y) || (isTransparent(x - 1,z,y) && !blockTransparent))
             {
                 let elem = addFace(type, 3);
                 block.faces[3] = elem;
                 block.appendChild(elem);
                 ++visibleFaces;
             }
-            if(isAir(x,z,y - -1) || (isTransparent(x,z,y - -1) && !blockTransparent))
+            if(isAir(x,z,y - -1) || isXShaped(x,z,y - -1) || (isTransparent(x,z,y - -1) && !blockTransparent))
             {
                 let elem = addFace(type, 4);
                 block.faces[4] = elem;
                 block.appendChild(elem);
                 ++visibleFaces;
             }
-            if(isAir(x,z,y - 1) || (isTransparent(x,z,y - 1) && !blockTransparent))
+            if(isAir(x,z,y - 1) || isXShaped(x,z,y - 1) || (isTransparent(x,z,y - 1) && !blockTransparent))
             {
                 let elem = addFace(type, 5);
                 block.faces[5] = elem;
@@ -234,8 +211,6 @@ function blockUpdate(x,z,y)
             }
         }
     }
-
-    //  console.log(block.faces);
 }
 function addXshape(block, type)
 {
@@ -387,6 +362,27 @@ let gravity = 10;
 let verticalSpeed = 0;
 
 let prevTime = +new Date();
+
+let occupiedBlock = [];
+let occupiedBlockData = [];
+
+function updateOccupiedBlocks()
+{
+    occupiedBlock[0] = {
+        x: -Math.round(player.pos.x),
+        z: -Math.round(player.pos.z),
+        y: Math.round(player.pos.y)
+    };
+    occupiedBlock[1] = {
+        x: -Math.round(player.pos.x),
+        z: -Math.round(player.pos.z),
+        y: Math.round(player.pos.y) + 1
+    };
+
+    occupiedBlockData[0] = blockList[blockData[occupiedBlock[0].x][occupiedBlock[0].z][occupiedBlock[0].y]];
+    occupiedBlockData[1] = blockList[blockData[occupiedBlock[1].x][occupiedBlock[1].z][occupiedBlock[1].y]];
+
+}
 function gameloop()
 {
     let delta = +new Date() - prevTime;
@@ -395,34 +391,38 @@ function gameloop()
     let moveVector = new Vector(keymovement.x,keymovement.z).unit();
     moveVector = rotate2dVector(moveVector, player.rot.x);
 
+
+
+
     player.pos.x += moveVector.x * delta / 400;
-    if(Math.abs(Math.round(player.pos.x)) > mapRadius || blockData[-Math.round(player.pos.x)][-Math.round(player.pos.z)][Math.round(player.pos.y)] != 0 ||
-        blockData[-Math.round(player.pos.x)][-Math.round(player.pos.z)][Math.round(player.pos.y) + 1] != 0)
+    updateOccupiedBlocks();
+    if(Math.abs(occupiedBlock[0].x) > mapRadius || (occupiedBlockData[0].id  != 0 && !occupiedBlockData[0].xshape) || (occupiedBlockData[1].id  != 0 && !occupiedBlockData[1].xshape))
     {
         player.pos.x -= moveVector.x * delta / 400;
     }
+
     player.pos.z += moveVector.y * delta / 400;
-    if(Math.abs(Math.round(player.pos.z)) > mapRadius || blockData[-Math.round(player.pos.x)][-Math.round(player.pos.z)][Math.round(player.pos.y)] != 0 ||
-        blockData[-Math.round(player.pos.x)][-Math.round(player.pos.z)][Math.round(player.pos.y) + 1] != 0)
+    updateOccupiedBlocks();
+    if(Math.abs(occupiedBlock[0].z) > mapRadius || (occupiedBlockData[0].id  != 0 && !occupiedBlockData[0].xshape) || (occupiedBlockData[1].id  != 0 && !occupiedBlockData[1].xshape))
     {
         player.pos.z -= moveVector.y * delta / 400;
     }
 
 
-
-    // console.log('vs:' + verticalSpeed);
-    // console.log('y:' + player.pos.y);
-
-
-
     verticalSpeed -= delta/100;
-
-
-    if(verticalSpeed <= 0 && blockData[-Math.round(player.pos.x)][-Math.round(player.pos.z)][Math.round(player.pos.y + verticalSpeed * delta/500)] != 0)
+    let blockBelow = blockList[blockData[-Math.round(player.pos.x)][-Math.round(player.pos.z)][Math.round(player.pos.y + verticalSpeed * delta/500)]];
+    let blockAbove = blockList[blockData[-Math.round(player.pos.x)][-Math.round(player.pos.z)][Math.round(player.pos.y + verticalSpeed * delta/500 - -1.8)]];
+    if(verticalSpeed <= 0 &&  blockBelow.id != 0 && !blockBelow.xshape)
     {
         verticalSpeed = 0;
         player.pos.y = Math.round(player.pos.y) - .5;
     }
+    else if(verticalSpeed >= 0 &&  blockAbove.id != 0 && !blockAbove.xshape)
+    {
+        verticalSpeed = 0;
+        //player.pos.y = Math.round(player.pos.y) - .5;
+    }
+
 
     player.pos.y += verticalSpeed * delta/500;
 
@@ -477,7 +477,8 @@ function checkFocus()
 
 function placeBlock(x, z, y, type)
 {
-    if(blockData[x] != undefined && blockData[x][z] != undefined && blockData[x][z][y] != undefined && y != 0 && y < 30)
+    updateOccupiedBlocks();
+    if(blockData[x] != undefined && blockData[x][z] != undefined && blockData[x][z][y] != undefined && y != 0 && y < 30 && (!(occupiedBlock[0].x == x && occupiedBlock[0].z == z && (occupiedBlock[0].y == y || occupiedBlock[0].y + 1 == y)) || type == 0 || blockList[type].xshape))
     {
         blockData[x][z][y] = type;
 
@@ -497,7 +498,7 @@ let activeBlock = 1;
 
 document.querySelector('#camera').onmousedown = function (e) {
 
-    //console.log(e.button);
+
     if(fpsenabled && focusBlock != null)
     {
 
@@ -583,9 +584,17 @@ function tick()
 
                         break;
                     }
+                    case 2:
+                    {
+                        if(blockData[x][z][y - -1] != 0 && !blockList[blockData[x][z][y - -1]].xshape && Math.random() < .008)
+                        {
+                            placeBlock(x,z,y,1);
+                        }
+                        break;
+                    }
                     case 10:
                     {
-                        if(Math.random() < .07 && blockData[x][z][y-1] == 2 && blockData[x][z][y - -1] == 0 && blockData[x][z][y - -2] == 0 && blockData[x][z][y - -3] == 0)
+                        if(Math.random() < .015 && blockData[x][z][y-1] == 2 && blockData[x][z][y - -1] == 0 && blockData[x][z][y - -2] == 0 && blockData[x][z][y - -3] == 0 && !(occupiedBlock[0].x == x && occupiedBlock[0].z == z && occupiedBlock[0].y >= y && occupiedBlock[0].y <= y - -4))
                         {
                             placeBlock(x,z,y,0);
                             buildStructure(x,z,y,'tree',false);
@@ -615,8 +624,6 @@ function buildStructure(xp, zp, yp, structureName, replace)
 }
 
 buildStructure(-5,-5,10, 'tree', false);
-
-//player position should be represented in blocks
 
 setInterval(gameloop, 1000/60);
 setInterval(tick, 1000);

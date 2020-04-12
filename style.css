@@ -20,12 +20,12 @@ body
 #crosshair
 {
     position: absolute;
-    width: 20px;
-    height: 20px;
+    width: 22px;
+    height: 22px;
     background-image: url(crosshair.png);
     background-size: 100% 100%;
-    left: calc(50% - 5px);
-    top: calc(50% - 5px);
+    left: calc(50% - 11px);
+    top: calc(50% - 11px);
     image-rendering: crisp-edges;
     image-rendering: pixelated;
 }
@@ -45,7 +45,6 @@ body
     perspective: var(--perspective);
     overflow: hidden;
     z-index: 500;
-
 }
 #scene
 {
@@ -109,5 +108,4 @@ body
     height: 100px;
     --img: url(textures/dirt.png);
     transform: scale(.6) rotateX(-30deg) rotateY(-45deg);
-
 }
