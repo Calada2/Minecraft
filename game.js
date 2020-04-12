@@ -396,14 +396,14 @@ function gameloop()
 
     player.pos.x += moveVector.x * delta / 400;
     updateOccupiedBlocks();
-    if(Math.abs(occupiedBlock[0].x) > mapRadius || (occupiedBlockData[0].id  != 0 && !occupiedBlockData[0].xshape) || (occupiedBlockData[1].id  != 0 && !occupiedBlockData[1].xshape))
+    if(Math.abs(player.pos.x) > mapRadius || (occupiedBlockData[0].id  != 0 && !occupiedBlockData[0].xshape) || (occupiedBlockData[1].id  != 0 && !occupiedBlockData[1].xshape))
     {
         player.pos.x -= moveVector.x * delta / 400;
     }
 
     player.pos.z += moveVector.y * delta / 400;
     updateOccupiedBlocks();
-    if(Math.abs(occupiedBlock[0].z) > mapRadius || (occupiedBlockData[0].id  != 0 && !occupiedBlockData[0].xshape) || (occupiedBlockData[1].id  != 0 && !occupiedBlockData[1].xshape))
+    if(Math.abs(player.pos.z) > mapRadius || (occupiedBlockData[0].id  != 0 && !occupiedBlockData[0].xshape) || (occupiedBlockData[1].id  != 0 && !occupiedBlockData[1].xshape))
     {
         player.pos.z -= moveVector.y * delta / 400;
     }
